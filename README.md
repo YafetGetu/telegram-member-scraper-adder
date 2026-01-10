@@ -1,4 +1,4 @@
-# Telegram Member Manager
+# Telegram Member Scraper and Adder
 
 A Python tool for managing Telegram group members using the Telethon API.  
 For educational purposes only.
