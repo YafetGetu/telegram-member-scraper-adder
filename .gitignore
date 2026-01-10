@@ -1,3 +1,2 @@
 .env
-session.session
-anonym.session
+*.session
