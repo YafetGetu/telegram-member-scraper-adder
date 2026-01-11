@@ -2,6 +2,31 @@ from telethon import TelegramClient
 import csv
 import os
 from dotenv import load_dotenv
+import logging
+from datetime import datetime
+
+def setup_logging():
+    log_dir = "logs"
+    os.makedirs(log_dir, exist_ok=True)
+    log_file = os.path.join(log_dir, f"scraper_{datetime.now().strftime('%Y%m%d_%H%M%S')}.log")
+    
+    logging.basicConfig(
+        level=logging.INFO,
+        format='%(asctime)s - %(levelname)s - %(message)s',
+        handlers=[
+            logging.FileHandler(log_file),
+            logging.StreamHandler()
+        ]
+    )
+    return logging.getLogger(__name__)
+
+# Usage in code
+logger = setup_logging()
+try:
+    # Your scraping code
+    logger.info(f"Starting scrape for {group_username}")
+except Exception as e:
+    logger.error(f"Error occurred: {e}", exc_info=True)
 
 # WARNING MESSAGE
 print("=" * 60)
@@ -55,6 +80,7 @@ async def main():
 
     print(f"\nScraping members from {group_username}...")
     print("This may take a while depending on group size...")
+    
     
     try:
         members = await client.get_participants(group_username)
