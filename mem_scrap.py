@@ -4,7 +4,9 @@ import os
 from dotenv import load_dotenv
 import logging
 from datetime import datetime
+from tqdm import tqdm  # Import tqdm for progress bar
 
+# Setup logging
 def setup_logging():
     log_dir = "logs"
     os.makedirs(log_dir, exist_ok=True)
@@ -20,13 +22,8 @@ def setup_logging():
     )
     return logging.getLogger(__name__)
 
-# Usage in code
+# Initialize logger
 logger = setup_logging()
-try:
-    # Your scraping code
-    logger.info(f"Starting scrape for {group_username}")
-except Exception as e:
-    logger.error(f"Error occurred: {e}", exc_info=True)
 
 # WARNING MESSAGE
 print("=" * 60)
@@ -77,19 +74,40 @@ client = TelegramClient("anonym", api_id, api_hash)
 
 async def main():
     await client.start()
-
+    
     print(f"\nScraping members from {group_username}...")
     print("This may take a while depending on group size...")
     
-    
     try:
-        members = await client.get_participants(group_username)
+        # Get all members with progress bar
+        logger.info(f"Starting scrape for {group_username}")
+        
+        print("\n" + "=" * 60)
+        print("FETCHING MEMBERS...")
+        print("=" * 60 + "\n")
+        
+        # Initialize progress bar
+        progress_bar = tqdm(
+            desc="Scraping Members",
+            unit=" members",
+            bar_format="{l_bar}{bar}| {n_fmt}/{total_fmt} [{elapsed}<{remaining}]"
+        )
+        
+        # Get members with progress tracking
+        members = []
+        async for user in client.iter_participants(group_username):
+            members.append(user)
+            progress_bar.update(1)
+        
+        progress_bar.close()
         
         if not members:
-            print("No members found or you don't have access to this group.")
+            print("\nNo members found or you don't have access to this group.")
+            logger.warning(f"No members found for {group_username}")
             return
             
-        print(f"Found {len(members)} members.")
+        print(f"\nFound {len(members)} members.")
+        logger.info(f"Found {len(members)} members in {group_username}")
         
         # Create csv directory if it doesn't exist
         os.makedirs("csv", exist_ok=True)
@@ -101,30 +119,50 @@ async def main():
         
         csv_path = os.path.join("csv", filename)
         
+        print("\n" + "=" * 60)
+        print("SAVING DATA TO CSV...")
+        print("=" * 60 + "\n")
+        
+        # Save to CSV with progress bar
         with open(csv_path, "w", newline="", encoding="utf-8") as f:
             writer = csv.writer(f)
             writer.writerow(["username", "id"])
-            for user in members:
-                username = user.username if user.username else ""
-                writer.writerow([username, user.id])
+            
+            # Add progress bar for writing
+            with tqdm(total=len(members), desc="Saving to CSV", unit=" rows") as save_bar:
+                for user in members:
+                    username = user.username if user.username else ""
+                    writer.writerow([username, user.id])
+                    save_bar.update(1)
         
         print(f"\n" + "=" * 60)
         print(f"SUCCESS: {len(members)} members saved to csv/{filename}")
         print("=" * 60)
+        logger.info(f"Data saved to {csv_path}")
         
     except Exception as e:
-        print(f"\nERROR: {e}")
-        print("Possible reasons:")
+        print(f"\n ERROR: {e}")
+        logger.error(f"Error occurred: {e}", exc_info=True)
+        print("\nPossible reasons:")
         print("1. You're not a member of the group")
         print("2. The group doesn't exist")
         print("3. You don't have permission to view members")
         print("4. Telegram API restrictions")
 
-with client:
-    client.loop.run_until_complete(main())
-
-# Final warning
-print("\n" + "=" * 60)
-print("REMEMBER: Use this data responsibly and ethically.")
-print("Respect user privacy and Telegram's Terms of Service.")
-print("=" * 60)
+# Main execution
+try:
+    with client:
+        client.loop.run_until_complete(main())
+        
+    # Final warning
+    print("\n" + "=" * 60)
+    print("REMEMBER: Use this data responsibly and ethically.")
+    print("Respect user privacy and Telegram's Terms of Service.")
+    print("=" * 60)
+    
+except KeyboardInterrupt:
+    print("\n\n Process interrupted by user.")
+    logger.warning("Process interrupted by user")
+except Exception as e:
+    logger.error(f"Fatal error: {e}", exc_info=True)
+    print(f"\n Fatal error occurred. Check logs for details.")
