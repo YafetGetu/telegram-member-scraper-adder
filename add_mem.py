@@ -167,8 +167,9 @@ async def main():
         total_users = len(rows)
         
         print(f"\nProcessing {total_users} users from CSV...")
+        print("Current progress: [                    ] 0%", end="")
         
-        for username, user_id in rows:
+        for index, (username, user_id) in enumerate(rows):
             try:
                 user = None
                 if username:
@@ -191,6 +192,12 @@ async def main():
                     print(f"Added: {username or user_id}")
                     success_count += 1
                     
+                    # Update progress bar
+                    progress = (index + 1) / total_users * 100
+                    filled = int(progress / 5)
+                    bar = "█" * filled + "░" * (20 - filled)
+                    print(f"\rCurrent progress: [{bar}] {progress:.1f}% ({index+1}/{total_users})", end="")
+                    
                     # Delay to avoid spam detection
                     await asyncio.sleep(35)
 
@@ -203,6 +210,13 @@ async def main():
                     await client(InviteToChannelRequest(group, [user]))
                     print(f"Added after wait: {username or user_id}")
                     success_count += 1
+                    
+                    # Update progress bar
+                    progress = (index + 1) / total_users * 100
+                    filled = int(progress / 5)
+                    bar = "█" * filled + "░" * (20 - filled)
+                    print(f"\rCurrent progress: [{bar}] {progress:.1f}% ({index+1}/{total_users})", end="")
+                    
                     await asyncio.sleep(35)
                 except:
                     print(f"Failed after retry: {username or user_id}")
@@ -223,6 +237,9 @@ async def main():
             except Exception as e:
                 print(f"Failed: {username or user_id} -> {type(e).__name__}")
                 fail_count += 1
+    
+    # Add final progress update
+    print(f"\rCurrent progress: [████████████████████] 100.0% ({total_users}/{total_users})")
     
     # Summary
     print("\n" + "=" * 60)
