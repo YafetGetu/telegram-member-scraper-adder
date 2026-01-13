@@ -252,10 +252,10 @@ async def main():
     
     # Final reminder
     print("\n" + "=" * 60)
-    print("REMINDER: Use this tool responsibly!")
-    print("- Respect user privacy")
-    print("- Only add willing participants")
-    print("- Follow Telegram's Terms of Service")
+    print("REMINDER: U!")
+    print("- Respect")
+    print("- Only add wis")
+    print("- Follow Teleg")
     print("=" * 60)
 
 with client:
