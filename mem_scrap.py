@@ -145,7 +145,9 @@ async def main():
         logger.error(f"Error occurred: {e}", exc_info=True)
         print("\nPossible reasons:")
         print("1. You're not a member of the group")
-        
+        print("2. The group doesn't exist")
+        print("3. You don't have permission to view members")
+        print("4. Telegram API restrictions")
 
 # Main execution
 try:
