@@ -31,9 +31,7 @@ print("IMPORTANT WARNING:")
 print("=" * 60)
 print("1. This tool is for EDUCATIONAL PURPOSES ONLY.")
 print("2. You must have PERMISSION to scrape members from any group.")
-print("3. RESPECT user privacy and Telegram's Terms of Service.")
-print("4. Make sure to TURN OFF 2-Step Verification in your")
-print("   Telegram account settings before using this tool.")
+
 print("=" * 60)
 
 confirm = input("Do you understand and accept these conditions? (yes/no): ")
