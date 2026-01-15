@@ -25,10 +25,6 @@ def setup_logging():
 # Initialize logger
 logger = setup_logging()
 
-logger.info("Script initialized successfully")
-logger.info(f"Run date: {datetime.now().date()}")
-
-
 # WARNING MESSAGE
 print("=" * 60)
 print("IMPORTANT WARNING:")
