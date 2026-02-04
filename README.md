@@ -203,24 +203,8 @@ Recommended `.gitignore` entries:
 
 ### Session files not found
 
-* Run the tool once to create session files
+* Run the tool once to create session files so you don't need to login everytime
 * Make sure you have write permissions
-
----
-
-## Contributing
-
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to your branch
-5. Open a Pull Request
-
----
-
-## License
-
-This project is licensed under the MIT License.
 
 ---
 
